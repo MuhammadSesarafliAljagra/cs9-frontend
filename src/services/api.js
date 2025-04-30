@@ -1,6 +1,6 @@
 // Base API service for handling HTTP requests
 
-const API_URL = "http://localhost:3000";
+const API_URL = "https://cs9-backend.vercel.app/";
 
 // Helper to handle fetch requests with authentication
 const fetchWithAuth = async (url, options = {}) => {
