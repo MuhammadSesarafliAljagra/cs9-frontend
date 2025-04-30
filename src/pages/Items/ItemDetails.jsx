@@ -102,9 +102,9 @@ const ItemDetails = () => {
       <div className="md:flex">
         {/* Image Section */}
         <div className="md:w-1/2 bg-gray-200 flex items-center justify-center h-64 md:h-auto">
-          {item.imageUrl ? (
+          {item.image_url ? (
             <img
-              src={item.imageUrl}
+              src={item.image_url}
               alt={item.name}
               className="object-cover h-full w-full"
             />
