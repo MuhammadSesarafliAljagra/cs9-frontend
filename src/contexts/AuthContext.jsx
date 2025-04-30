@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Use URLSearchParams for query parameters
       const response = await fetch(
-        `http://localhost:3000/user/login?email=${encodeURIComponent(
+        `https://cs9-backend.vercel.app/user/login?email=${encodeURIComponent(
           email
         )}&password=${encodeURIComponent(password)}`,
         {
@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
       }).toString();
 
       const response = await fetch(
-        `http://localhost:3000/user/register?${queryString}`,
+        `https://cs9-backend.vercel.app/user/register?${queryString}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
