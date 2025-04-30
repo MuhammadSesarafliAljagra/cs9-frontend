@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { getAllItems } from "../../services/itemService";
 import { getAllStores } from "../../services/storeService";
 import { AuthContext } from "../../contexts/AuthContext";
-import ItemCard from "../../components/items/itemCard";
+import ItemCard from "../../components/items/ItemCard";
 import Button from "../../components/common/Button";
 
 const ItemsList = () => {
