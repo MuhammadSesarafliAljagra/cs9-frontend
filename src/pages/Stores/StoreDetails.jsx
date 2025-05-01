@@ -25,7 +25,7 @@ const StoreDetails = () => {
 
         // Fetch all items and filter those belonging to this store
         const allItems = await getAllItems();
-        const storeItems = allItems.filter((item) => item.storeId === id);
+        const storeItems = allItems.filter((item) => item.store_id === id);
         setItems(storeItems);
       } catch (err) {
         setError("Failed to load store details. Please try again later.");

@@ -15,6 +15,13 @@ export const AuthProvider = ({ children }) => {
       setUser(JSON.parse(storedUser));
     }
     setLoading(false);
+
+    const handleUserUpdate = (event) => {
+      setUser(event.detail);
+    };
+
+    window.addEventListener("userUpdated", handleUserUpdate);
+    return () => window.removeEventListener("userUpdated", handleUserUpdate);
   }, []);
 
   // In the login function
@@ -84,7 +91,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, setUser, login, register, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

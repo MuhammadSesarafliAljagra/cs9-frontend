@@ -13,7 +13,9 @@ const Profile = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const [topUpAmount, setTopUpAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const [topUpLoading, setTopUpLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
   useEffect(() => {
@@ -98,6 +100,64 @@ const Profile = () => {
     }
   };
 
+  const handleTopUp = async (e) => {
+    e.preventDefault();
+
+    if (!topUpAmount || parseFloat(topUpAmount) <= 0) {
+      setMessage({
+        type: "error",
+        text: "Please enter a valid amount to top up",
+      });
+      return;
+    }
+
+    setTopUpLoading(true);
+    setMessage({ type: "", text: "" });
+
+    try {
+      // Make API call to top up user balance
+      const response = await fetch(
+        `https://cs9-backend.vercel.app/user/topUp?id=${encodeURIComponent(
+          user.id
+        )}&amount=${encodeURIComponent(topUpAmount)}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Top up failed. Please try again.");
+      }
+
+      const result = await response.json();
+
+      // Update user in local storage with new balance
+      const updatedUser = { ...user, balance: result.payload.balance };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      // Update AuthContext user state - this will update the UI everywhere
+      setUser(updatedUser);
+
+      setMessage({
+        type: "success",
+        text: "Balance topped up successfully",
+      });
+
+      setTopUpAmount("");
+    } catch (err) {
+      setMessage({
+        type: "error",
+        text: err.message || "Failed to top up balance. Please try again.",
+      });
+    } finally {
+      setTopUpLoading(false);
+    }
+  };
+
   if (!user) {
     return (
       <div className="text-center py-10">
@@ -122,6 +182,59 @@ const Profile = () => {
         </div>
       )}
 
+      {/* User Balance Card */}
+      <div className="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-sm font-semibold text-gray-500">
+              Current Balance
+            </h2>
+            <p className="text-xl font-bold text-gray-800">
+              Rp. {user.balance ? parseFloat(user.balance).toFixed(2) : "0.00"}
+            </p>
+          </div>
+          <div className="bg-primary-100 p-2 rounded-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8 text-primary-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      {/* Top Up Form */}
+      <form
+        onSubmit={handleTopUp}
+        className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200"
+      >
+        <h2 className="text-lg font-semibold mb-4">Top Up Balance</h2>
+        <div className="flex space-x-2">
+          <input
+            type="number"
+            min="1000"
+            step="1000"
+            value={topUpAmount}
+            onChange={(e) => setTopUpAmount(e.target.value)}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            placeholder="Enter amount"
+          />
+          <Button type="submit" disabled={topUpLoading}>
+            {topUpLoading ? "Processing..." : "Top Up"}
+          </Button>
+        </div>
+      </form>
+
+      {/* Profile Update Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         <Input
           label="Full Name"

@@ -22,9 +22,9 @@ const TransactionItem = ({
     <div className="flex items-center py-4 border-b">
       {/* Item image */}
       <div className="w-16 h-16 bg-gray-200 mr-4 flex-shrink-0">
-        {item.imageUrl ? (
+        {item.image_url ? (
           <img
-            src={item.imageUrl}
+            src={item.image_url}
             alt={item.name}
             className="w-full h-full object-cover"
           />

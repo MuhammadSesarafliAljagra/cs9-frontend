@@ -3,8 +3,12 @@ import { Link } from "react-router-dom";
 import { getAllItems } from "../../services/itemService";
 import { getAllStores } from "../../services/storeService";
 import { AuthContext } from "../../contexts/AuthContext";
+import { ThemeContext } from "../../contexts/ThemeContext";
 import ItemCard from "../../components/items/ItemCard";
 import Button from "../../components/common/Button";
+import Skeleton from "../../components/common/Skeleton";
+import Message from "../../components/common/Message";
+import PageContainer from "../../components/layout/PageContainer";
 
 const ItemsList = () => {
   const [items, setItems] = useState([]);
@@ -20,6 +24,7 @@ const ItemsList = () => {
   });
 
   const { user } = useContext(AuthContext);
+  const { darkMode } = useContext(ThemeContext);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -88,27 +93,46 @@ const ItemsList = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-10">Loading items...</div>;
+    return (
+      <PageContainer title="All Items">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, index) => (
+            <Skeleton key={index} height="320px" />
+          ))}
+        </div>
+      </PageContainer>
+    );
   }
 
   if (error) {
     return (
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded my-4">
-        {error}
-      </div>
+      <PageContainer>
+        <Message type="error">{error}</Message>
+      </PageContainer>
     );
   }
 
+  const ActionsButton = user ? (
+    <Link to="/items/add">
+      <Button>Add New Item</Button>
+    </Link>
+  ) : null;
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
+    <PageContainer title="All Items" actions={ActionsButton}>
+      {/* Filters */}
+      {/* <div
+        className={`p-4 rounded-lg mb-6 ${
+          darkMode ? "bg-gray-800" : "bg-gray-50"
+        }`}
+      >
         <h1 className="text-3xl font-bold">All Items</h1>
         {user && (
           <Link to="/items/add">
             <Button>Add New Item</Button>
           </Link>
         )}
-      </div>
+      </div> */}
 
       {/* Filters */}
       <div className="bg-gray-50 p-4 rounded-lg mb-6">
@@ -186,20 +210,23 @@ const ItemsList = () => {
 
       {/* Items Grid */}
       {filteredItems.length === 0 ? (
-        <div className="text-center py-10 bg-gray-50 rounded-lg">
-          <p className="text-gray-500">
+        <div
+          className={`text-center py-10 rounded-lg ${
+            darkMode ? "bg-gray-800" : "bg-gray-50"
+          }`}
+        >
+          <p className={darkMode ? "text-gray-400" : "text-gray-500"}>
             No items found matching your criteria.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredItems.map((item) => (
             <ItemCard key={item.id} item={item} />
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 };
-
 export default ItemsList;
